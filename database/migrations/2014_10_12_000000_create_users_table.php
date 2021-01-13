@@ -1,8 +1,9 @@
 <?php
 
-use illuminate\database\migrations\migration;
-use illuminate\database\schema\blueprint;
-use illuminate\support\facades\schema;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
 
 class createuserstable extends migration
 {

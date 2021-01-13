@@ -12,7 +12,6 @@ class CaptchaController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
         $this->captcha_key = env('APP_CAPTCHA_KEY','');
     }
 
