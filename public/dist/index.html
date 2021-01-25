@@ -12,5 +12,5 @@
 <link rel="stylesheet" href="/dist/styles.c2570a646e7241fcf0de.css"></head>
 <body class="mat-typography">
   <app-root></app-root>
-<script src="/dist/runtime.1e880f27c6796bf4bed5.js" defer=""></script><script src="/dist/polyfills.2e71067f259e79e852da.js" defer=""></script><script src="/dist/scripts.1c89aa03a98913aba97b.js" defer=""></script><script src="/dist/main.aa8b2b05d4c34b249577.js" defer=""></script></body>
+<script src="/dist/runtime.1e880f27c6796bf4bed5.js" defer=""></script><script src="/dist/polyfills.2e71067f259e79e852da.js" defer=""></script><script src="/dist/scripts.1c89aa03a98913aba97b.js" defer=""></script><script src="/dist/main.27280f5a0eb28ebf2c2d.js" defer=""></script></body>
 </html>
