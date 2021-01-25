@@ -2,22 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
+    /**
+     * @var AuthService
+     */
+    private AuthService $authService;
+
     /**
      * Create a new AuthController instance.
      *
      * @return void
      */
     public function __construct() {
-        $this->middleware('auth:api')->except(['login', 'register']);
-
+        $this->middleware('auth:api')->except(['login', 'register','validateSocialToken']);
+        $this->authService = new AuthService();
     }
 
     /**
@@ -26,25 +33,19 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function login(Request $request){
+    public function login(LoginRequest $request){
 
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        if (! $token = auth()->attempt($validator->validated())) {
+        if (! $token = auth()->attempt($request->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        if(!auth()->user()->hasVerifiedEmail()){
+        $user = auth()->user();
+        if(!$user->hasVerifiedEmail() && $user->social_id==-1){
             return response()->json(['error' => 'Email not verified', 'unverified'=> true], 401);
         }
-        return $this->createNewToken($token);
+        return response()->json($this->authService->
+            createNewToken($token,auth()->factory()->getTTL()*60,auth()->user()));
     }
+
 
     /**
      * Register a User.
@@ -52,20 +53,10 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function register(Request $request) {
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+    public function register(RegisterRequest $request) {
 
         $user = User::create(array_merge(
-            $validator->validated(),
+            $request->validated(),
             ['password' => bcrypt($request->password)]
         ));
         $user->sendEmailVerificationNotification();
@@ -73,7 +64,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'User successfully registered',
-            'user' => $user
+            'user' => $user,
         ], 201);
     }
 
@@ -87,7 +78,6 @@ class AuthController extends Controller
      */
     public function logout() {
         auth()->logout();
-
         return response()->json(['message' => 'User successfully signed out']);
     }
 
@@ -97,7 +87,10 @@ class AuthController extends Controller
      * @return JsonResponse
      */
     public function refresh() {
-        return $this->createNewToken(auth()->refresh());
+        return response()->json($this->authService->createNewToken(
+            auth()->refresh(),
+            auth()->factory()->getTTL()*60,
+            auth()->user()));
     }
 
     /**
@@ -109,19 +102,37 @@ class AuthController extends Controller
         return response()->json(auth()->user());
     }
 
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return JsonResponse
-     */
-    protected function createNewToken($token){
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
-        ]);
+    // Callback du provider
+    public function validateSocialToken ($provider,Request $request) {
+        $social = $this->authService->getSocialProvider($provider);
+        if($social){
+            $data = $social->stateless()->userFromToken($request->token);
+
+            # Social login - register
+            $finduser = User::where('social_id', $data->id)->first();
+
+            if($finduser){
+                //if the user exists, login and show dashboard
+                $user = $finduser;
+            }else{
+                //user is not yet created, so create first
+                $newUser = User::create([
+                    'name' => $data->name,
+                    'email' => $data->email,
+                    'social_id'=> $data->id,
+                ]);
+                $newUser->save();
+                $user = $newUser;
+            }
+
+            $token= auth()->login($user);
+            $user = auth()->user();
+            $user->markEmailAsVerified();
+
+            return response()->json($this->authService->
+            createNewToken($token,auth()->factory()->getTTL()*60,$user));
+        }else{
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
     }
 }

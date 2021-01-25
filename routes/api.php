@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\PasswordResetRequestController;
 use App\Http\Controllers\PasswordUpdateController;
+use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\VerificationApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,8 @@ Route::middleware('api')->group(function(){
         Route::post('/captcha', [CaptchaController::class, 'validateCaptcha']);
         Route::get('email/verify/{id}', [VerificationApiController::class,'verify'])->name('verification.verify');
         Route::get('email/resend', [VerificationApiController::class,'resend'])->name('verification.resend');
+        Route::get('social/{provider}', [AuthController::class,'validateSocialToken']);
+
     });
 
 });
