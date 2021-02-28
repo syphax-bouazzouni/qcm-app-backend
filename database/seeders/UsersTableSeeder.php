@@ -27,5 +27,24 @@ class UsersTableSeeder extends Seeder
 
 
         }
+        $user = User::firstOrCreate(
+            ['email' => 'root2@test.com'], [
+                'name' => 'root2',
+                'password' => bcrypt(config('admin.admin_password')),
+            ]
+        );
+        $user->is_admin = 1;
+        $user->save();
+        $user->markEmailAsVerified();
+
+        $user = User::firstOrCreate(
+            ['email' => 'root3@test.com'], [
+                'name' => 'root3',
+                'password' => bcrypt(config('admin.admin_password')),
+            ]
+        );
+        $user->is_admin = 1;
+        $user->save();
+        $user->markEmailAsVerified();
     }
 }

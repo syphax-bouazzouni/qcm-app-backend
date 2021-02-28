@@ -8,6 +8,7 @@ use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
@@ -23,8 +24,13 @@ class AuthController extends Controller
      * @return void
      */
     public function __construct() {
-        $this->middleware('auth:api')->except(['login', 'register','validateSocialToken']);
+        $this->middleware('auth:api')->except(['login', 'notLogged','register','validateSocialToken']);
         $this->authService = new AuthService();
+    }
+
+
+    public function notLogged(){
+        return response()->json(['success'=>false ,'message'=>'not connected'],Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -34,7 +40,6 @@ class AuthController extends Controller
      * @return JsonResponse
      */
     public function login(LoginRequest $request){
-
         if (! $token = auth()->attempt($request->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
