@@ -152,17 +152,22 @@ class QuizController extends Controller
             unset($question['propositions']);
             unset($question['isQROC']);
             unset($question['id']);
-
-            $question = Question::updateOrCreate(['id' => $question_id], $question);
+            if ($question_id){
+                $question = Question::updateOrCreate(['id' => $question_id], $question);
+            }else{
+                $question = Question::create($question);
+            }
             $questions_ids[] = $question->id;
-            $this->updatePropositions($propositions, $question_id);
+            $this->updatePropositions($propositions, $question->id);
         }
         $test->questions()->sync($questions_ids);
     }
 
-    private function updatePropositions($propositions, int $question_id)
+    private function updatePropositions($propositions, $question_id)
     {
-        Proposition::where('question', $question_id)->delete();
+        if ($question_id){
+            Proposition::where('question', $question_id)->delete();
+        }
         foreach ($propositions as $proposition) {
             $proposition['question'] = $question_id;
             $proposition = Proposition::updateOrCreate($proposition);
