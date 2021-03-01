@@ -17,8 +17,8 @@ class CreateModuleOfferTable extends Migration
             $table->string('module_id');
             $table->string('offer_id');
 
-            $table->foreign('module_id')->references('id')->on('modules');
-            $table->foreign('offer_id')->references('id')->on('offers');
+            $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
+            $table->foreign('offer_id')->references('id')->on('offers')->onDelete('cascade');
         });
     }
 

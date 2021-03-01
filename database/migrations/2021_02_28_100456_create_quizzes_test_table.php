@@ -17,8 +17,8 @@ class CreateQuizzesTestTable extends Migration
             $table->string('quiz_id');
             $table->bigInteger('test_id');
 
-            $table->foreign('quiz_id')->references('id')->on('quizzes');
-            $table->foreign('test_id')->references('id')->on('tests');
+            $table->foreign('quiz_id')->references('id')->on('quizzes')->onDelete('cascade');
+            $table->foreign('test_id')->references('id')->on('tests')->onDelete('cascade');
         });
     }
 
