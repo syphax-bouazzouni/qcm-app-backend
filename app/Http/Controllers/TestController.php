@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TestResource;
 use App\Http\Resources\TestResourceCollection;
+use App\Models\Quiz;
 use App\Models\Test;
 use Illuminate\Http\Request;
 
@@ -15,7 +17,7 @@ class TestController extends Controller
      */
     public function index()
     {
-        return (new TestResourceCollection(Test::all()))->response();
+        return (new TestResourceCollection(Test::with('questions.propositions')->latest()->paginate()))->response();
     }
 
     /**
@@ -33,11 +35,11 @@ class TestController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Test $test)
     {
-        //
+        return (new TestResource($test->load('questions.propositions')))->response();
     }
 
     /**

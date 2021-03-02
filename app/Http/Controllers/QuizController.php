@@ -131,16 +131,24 @@ class QuizController extends Controller
 
     private function updateTests(Request $request, Quiz $quiz)
     {
-        $tests = [];
+        $tests_ids = [];
         foreach ($request->get('tests') as $test) {
+            $test_id = $test['id'];
             $questions = $test['questions'];
             unset($test['questions']);
-            $test = Test::updateOrCreate($test);
+            unset($test['id']);
+
+            if ($test_id){
+                $test = Test::updateOrCreate(['id' => $test_id],$test);
+            }else{
+                $test = Test::create($test);
+            }
+
+            $tests_ids[] = $test->id;
             $this->updateQuestions($questions, $test);
-            $tests[] = $test->id;
         }
 
-        $quiz->tests()->sync($tests);
+        $quiz->tests()->sync($tests_ids);
     }
 
     private function updateQuestions($questions, Test $test)
