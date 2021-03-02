@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TestResourceCollection;
+use App\Models\Test;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
@@ -9,11 +11,11 @@ class TestController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
+        return (new TestResourceCollection(Test::all()))->response();
     }
 
     /**

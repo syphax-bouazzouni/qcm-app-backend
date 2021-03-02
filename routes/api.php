@@ -39,6 +39,8 @@ Route::middleware('api')->group(function(){
     Route::apiResource('modules' , \App\Http\Controllers\ModuleController::class);
     Route::apiResource('quizzes' , \App\Http\Controllers\QuizController::class);
     Route::apiResource('offers' , \App\Http\Controllers\OfferController::class);
+    Route::apiResource('tests' , \App\Http\Controllers\TestController::class);
+    // Route::apiResource('questions' , \App\Http\Controllers\::class);
     Route::post('images' , [ImageController::class , 'store']);
     Route::get('images/{image}' , [ImageController::class , 'show']);
 
