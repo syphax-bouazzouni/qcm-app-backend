@@ -16,4 +16,5 @@ class TestResourceCollection extends ResourceCollection
     {
         return parent::toArray($request);
     }
+
 }

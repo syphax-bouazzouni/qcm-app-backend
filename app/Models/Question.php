@@ -15,4 +15,8 @@ class Question extends Model
     public function propositions(){
         return $this->hasMany(Proposition::class , 'question');
     }
+    public function tests()
+    {
+        return $this->belongsToMany(Test::class);
+    }
 }

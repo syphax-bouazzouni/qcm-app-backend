@@ -7,6 +7,7 @@ use App\Http\Resources\TestResourceCollection;
 use App\Models\Quiz;
 use App\Models\Test;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class TestController extends Controller
 {
@@ -17,7 +18,7 @@ class TestController extends Controller
      */
     public function index()
     {
-        return (new TestResourceCollection(Test::with('questions.propositions')->latest()->paginate()))->response();
+        return (new TestResourceCollection(Test::withCount('quizzes')->with('questions.propositions')->latest()->paginate()))->response();
     }
 
     /**
@@ -57,11 +58,15 @@ class TestController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Test $test
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
-    public function destroy($id)
+    public function destroy(Test $test)
     {
-        //
+        $test->quizzes()->sync([]);
+        $test->questions()->sync([]);
+        $test->delete();
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }

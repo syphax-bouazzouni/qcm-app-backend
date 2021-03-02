@@ -9,6 +9,7 @@ use App\Http\Resources\TestResourceCollection;
 use App\Models\Question;
 use App\Models\Test;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class QuestionController extends Controller
 {
@@ -19,7 +20,7 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        return (new QuestionResourceCollection(Question::with('propositions')->latest()->paginate()))->response();
+        return (new QuestionResourceCollection(Question::withCount('tests')->with('propositions')->latest()->paginate()))->response();
     }
 
     /**
@@ -59,11 +60,14 @@ class QuestionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Question $question
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Question $question)
     {
-        //
+        $question->tests()->sync([]);
+        $question->propositions()->delete();
+        $question->delete();
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }
