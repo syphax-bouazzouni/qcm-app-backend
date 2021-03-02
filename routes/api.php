@@ -35,6 +35,7 @@ Route::middleware('api')->group(function(){
         Route::get('social/{provider}', [AuthController::class,'validateSocialToken']);
     });
     Route::post('modules/quizzes' ,[\App\Http\Controllers\QuizController::class , 'indexModule']);
+    Route::post('modules/quizzes' ,[\App\Http\Controllers\QuizController::class , 'indexModule']);
     Route::apiResource('modules' , \App\Http\Controllers\ModuleController::class);
     Route::apiResource('quizzes' , \App\Http\Controllers\QuizController::class);
     Route::apiResource('offers' , \App\Http\Controllers\OfferController::class);
