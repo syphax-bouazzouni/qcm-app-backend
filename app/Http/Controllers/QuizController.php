@@ -29,7 +29,7 @@ class QuizController extends Controller
      */
     public function index()
     {
-        return (new QuizResourceCollection(Quiz::latest()->paginate()))->response();
+        return (new QuizResourceCollection(Quiz::paginate()))->response();
     }
 
     /**
@@ -45,7 +45,7 @@ class QuizController extends Controller
         return (new QuizResourceCollection(Quiz::where([
             ['module', '=', $module],
             ['isExam', '=', $isExam],
-        ])->latest()->paginate()))->response();
+        ])->paginate()))->response();
     }
 
 
