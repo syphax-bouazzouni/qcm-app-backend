@@ -22,15 +22,6 @@ class QuizController extends Controller
         $this->testsController = new TestsController();
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function index()
-    {
-        return (new QuizResourceCollection(Quiz::paginate()))->response();
-    }
 
     /**
      * Display a listing of the resource.
@@ -38,7 +29,7 @@ class QuizController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function indexModule(Request $request)
+    public function index(Request $request)
     {
         $module = $request->get('module');
         $isExam = $request->get('isExam');

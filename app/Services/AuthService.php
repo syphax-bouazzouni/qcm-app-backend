@@ -30,8 +30,9 @@ class AuthService
         return [
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => $ttl * 60,
+            'expires_in' => $ttl * 60 * 60 * 1000,
             'user' => $user
         ];
     }
+
 }

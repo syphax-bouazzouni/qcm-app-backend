@@ -9,7 +9,7 @@ class VerificationApiController extends Controller
 {
 
     public function __construct() {
-        $this->middleware('auth:api')->except(['verify']);
+        $this->middleware('auth:api')->except(['verify' ,'resend']);
     }
 
     /**
@@ -36,16 +36,22 @@ class VerificationApiController extends Controller
     /**
      * Resend email verification link
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function resend() {
-        if (auth()->user()->hasVerifiedEmail()) {
-            return  response()->json(['error'=> true,'message' => 'User mail is verified']);
+    public function resend(Request $request) {
+        $user = User::where('email' , $request->get('email'))->first();
+
+        if($user){
+            if (!$user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+                return response()->json(['success'=> true,'message' => 'Email verification resended']);
+            }else{
+                return response()->json(['error'=> true,'message' => 'Email verification resended'])->setStatusCode(401);
+            }
+        }else{
+            return response()->json(['error'=> true,'message' => 'Email not found'])->setStatusCode(401);
         }
-
-        auth()->user()->sendEmailVerificationNotification();
-
-        return response()->json(['success'=> true,'message' => 'Email verification resended']);
     }
 }
 

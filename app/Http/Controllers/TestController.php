@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TestResource;
 use App\Http\Resources\TestResourceCollection;
+use App\Models\Fav;
 use App\Models\Quiz;
 use App\Models\Test;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ class TestController extends Controller
     {
         return (new TestResourceCollection(Test::withCount('quizzes')->with('questions.propositions')->latest()->paginate()))->response();
     }
+
+
 
     /**
      * Store a newly created resource in storage.

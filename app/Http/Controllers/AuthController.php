@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -45,17 +46,17 @@ class AuthController extends Controller
         }
         $user = auth()->user();
         if(!$user->hasVerifiedEmail() && $user->social_id==-1){
-            return response()->json(['error' => 'Email not verified', 'unverified'=> true], 401);
+            return response()->json(['error' => 'Email not verified', 'unverified'=> true , 'email' => $request->get('email')], 401);
         }
         return response()->json($this->authService->
-            createNewToken($token,auth()->factory()->getTTL()*60,auth()->user()));
+            createNewToken($token,auth()->factory()->getTTL(),auth()->user()));
     }
 
 
     /**
      * Register a User.
      *
-     * @param Request $request
+     * @param RegisterRequest $request
      * @return JsonResponse
      */
     public function register(RegisterRequest $request) {
@@ -94,7 +95,7 @@ class AuthController extends Controller
     public function refresh() {
         return response()->json($this->authService->createNewToken(
             auth()->refresh(),
-            auth()->factory()->getTTL()*60,
+            auth()->factory()->getTTL(),
             auth()->user()));
     }
 
@@ -135,7 +136,7 @@ class AuthController extends Controller
             $user->markEmailAsVerified();
 
             return response()->json($this->authService->
-            createNewToken($token,auth()->factory()->getTTL()*60,$user));
+            createNewToken($token,auth()->factory()->getTTL() ,$user));
         }else{
             return response()->json(['error' => 'Unauthorized'], 401);
         }

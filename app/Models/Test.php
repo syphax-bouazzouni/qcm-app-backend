@@ -22,4 +22,9 @@ class Test extends Model
     {
         return $this->belongsToMany(Quiz::class);
     }
+
+    public function favs()
+    {
+        return $this->belongsToMany(Fav::class);
+    }
 }
