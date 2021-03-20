@@ -9,7 +9,7 @@ class TestSession extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'quiz' , 'timer' , 'text' , 'state' , 'source' , 'type' , 'quizLabel'
+        'quiz' , 'timer' , 'text' , 'state' , 'source' , 'type' , 'quizLabel' ,'test'
     ];
 
     public function quiz()

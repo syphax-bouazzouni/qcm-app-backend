@@ -17,6 +17,7 @@ class CreateTestSessionsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->bigInteger('quiz');
+            $table->bigInteger('test');
             $table->string('quizLabel');
             $table->integer('timer')->default(0);
             $table->text('text');

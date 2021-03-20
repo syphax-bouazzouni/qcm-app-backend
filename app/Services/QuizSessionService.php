@@ -25,6 +25,7 @@ class QuizSessionService
                 $testSession = new TestSession([
                     'quiz' => $quizSession->id,
                     'timer'=> 0 ,
+                    'test'=> $test->id ,
                     'text' => $this->getTestText($test , $questions),
                     'state' => 4 ,
                     'source' => $test->source,
