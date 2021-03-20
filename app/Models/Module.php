@@ -26,4 +26,7 @@ class Module extends Model
     public function offers(){
         return $this->belongsToMany(Offer::class);
     }
+    public function quizzes(){
+        return $this->hasMany(Quiz::class , 'module');
+    }
 }

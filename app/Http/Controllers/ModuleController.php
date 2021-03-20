@@ -29,7 +29,25 @@ class ModuleController extends Controller
         return (new ModuleResourceCollection(Module::paginate()->load('offers')))->response();
     }
 
+    public function moduleWithQuizzes(Request $request)
+    {
+        $request->validate([
+            'module' => 'required'
+        ]);
+        $types = $request->get('types');
+        $module = null;
+        if($types){
+            $module = Module::where('id' ,$request->get('module'))
+                ->with(['quizzes' => function($q) use ($types) {
+                    $q->withCount(['tests as nbTests' => function($t) use ($types){
+                        $t->whereIn('type' , $types);
+                    }]);
+                }])->first();
 
+        }
+
+        return (new ModuleResource($module))->response();
+    }
 
     /**
      * Store a newly created resource in storage.
