@@ -27,13 +27,23 @@ class QuizSessionController extends Controller
         return response()->json(QuizSession::with(['progression' ,'quizzes'])->where('user' , auth()->user()->id)->paginate())->setStatusCode(Response::HTTP_ACCEPTED);
     }
 
-    public function startSession(Request $request){
+    private function session($request , $testContinue , $isContinue = false ){
         $request->validate([
             'quizzes' => 'required',
             'isQuiz' => 'required',
         ]);
-        $quizzes_ids =  $request->get('quizzes');
-        return $this->create($quizzes_ids , true , $request->get('isQuiz'));
+        $quizzes =  $request->get('quizzes');
+        return $this->create($quizzes, $testContinue , $request->get('isQuiz') , $isContinue);
+    }
+    public function startSession(Request $request){
+       return $this->session($request , true);
+    }
+
+    public function startNewSession(Request  $request){
+       $request->validate([
+           'isContinue' => 'required'
+       ]);
+       return $this->session($request , false , $request->get('isContinue'));
     }
 
     public function restartSession(Request  $request){
@@ -46,14 +56,16 @@ class QuizSessionController extends Controller
         return  (new QuizSessionResource($quizSession->load($this->quizSessionService->relations)))->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
-    private function create($quizzes_ids , $start , $isQuiz){
+
+
+    private function create($quizzes, $testContinue, $isQuiz , $isContinue){
         $quizSession = null;
-        if($isQuiz){
-            $quizzes = Quiz::whereIn('id' , $quizzes_ids)->get();
-        }else{
-            $quizzes = Fav::whereIn('id' , $quizzes_ids)->get();
+
+        if($this->quizSessionService->isBasicSession($quizzes)){
+            $quizzes = $this->quizSessionService->findBasicSessionTests($quizzes , $isQuiz , $isContinue);
         }
-        if($start){
+
+        if($testContinue){
             $quizSession = $this->quizSessionService->sessionNotFinished($quizzes);
         }
         if(!$quizSession){
@@ -61,7 +73,6 @@ class QuizSessionController extends Controller
         }
         return  (new QuizSessionResource($quizSession->load($this->quizSessionService->relations)))->response()->setStatusCode(Response::HTTP_CREATED);
     }
-
 
 
     public function saveSession(Request $request){

@@ -17,7 +17,7 @@ class CreateTestSessionsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->bigInteger('quiz');
-            $table->bigInteger('test');
+            $table->bigInteger('test')->nullable();
             $table->string('quizLabel');
             $table->integer('timer')->default(0);
             $table->text('text');
@@ -27,6 +27,8 @@ class CreateTestSessionsTable extends Migration
 
             $table->foreign('quiz')->references('id')->on('quiz_sessions')
                 ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('test')->references('id')->on('tests')
+                ->onUpdate('cascade')->nullOnDelete();
         });
     }
 

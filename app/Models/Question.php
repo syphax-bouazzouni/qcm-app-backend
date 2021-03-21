@@ -19,4 +19,8 @@ class Question extends Model
     {
         return $this->belongsToMany(Test::class);
     }
+
+    public function sessions(){
+        return $this->hasMany(QuestionSession::class , 'question');
+    }
 }

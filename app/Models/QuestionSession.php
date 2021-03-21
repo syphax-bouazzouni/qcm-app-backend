@@ -9,7 +9,7 @@ class QuestionSession extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'test' , 'state' , 'type' , 'text' , 'explication' , 'note' , 'isQrocResponded'
+        'test' , 'state' , 'type' , 'text' , 'explication' , 'note' , 'isQrocResponded' ,'question'
     ];
 
     public function test()
@@ -21,4 +21,5 @@ class QuestionSession extends Model
     {
         return $this->hasMany(PropositionState::class , 'question')->orderBy('id');
     }
+
 }

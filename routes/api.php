@@ -56,6 +56,7 @@ Route::middleware('api')->group(function(){
     Route::get('years/modules' ,[\App\Http\Controllers\YearsModulesController::class , 'index']);
 
     Route::post('quiz/session/start' ,[\App\Http\Controllers\QuizSessionController::class , 'startSession']);
+    Route::post('quiz/session/new' ,[\App\Http\Controllers\QuizSessionController::class , 'startNewSession']);
     Route::post('quiz/session/save' ,[\App\Http\Controllers\QuizSessionController::class , 'saveSession']);
     Route::post('quiz/session/restart' ,[\App\Http\Controllers\QuizSessionController::class , 'restartSession']);
     Route::get('quiz/session' ,[\App\Http\Controllers\QuizSessionController::class , 'index']);

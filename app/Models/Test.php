@@ -27,4 +27,9 @@ class Test extends Model
     {
         return $this->belongsToMany(Fav::class);
     }
+
+    public function sessions()
+    {
+        return $this->hasMany(TestSession::class ,'test');
+    }
 }

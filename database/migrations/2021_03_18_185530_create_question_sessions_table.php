@@ -16,6 +16,7 @@ class CreateQuestionSessionsTable extends Migration
         Schema::create('question_sessions', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('test');
+            $table->bigInteger('question')->nullable();
             $table->text('text');
             $table->text('explication')->nullable()->default('');
             $table->text('note')->nullable()->default('');
@@ -26,6 +27,8 @@ class CreateQuestionSessionsTable extends Migration
 
             $table->foreign('test')->references('id')->on('test_sessions')
                 ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('question')->references('id')->on('questions')
+                ->onUpdate('cascade')->nullOnDelete();
         });
     }
 

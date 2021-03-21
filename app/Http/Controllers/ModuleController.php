@@ -4,21 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ModuleResource;
 use App\Http\Resources\ModuleResourceCollection;
+use App\Http\Resources\QuizResourceCollection;
 use App\Models\Image;
 use App\Models\Module;
 use App\Models\Offer;
 use App\Models\Question;
+use App\Models\QuestionSession;
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class ModuleController extends Controller
 {
-    private  $imageController;
-    public function __construct() {
+    private $imageController;
+
+    public function __construct()
+    {
         $this->middleware('auth:api');
         $this->imageController = new ImageController();
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -32,35 +38,80 @@ class ModuleController extends Controller
     public function moduleWithQuizzes(Request $request)
     {
         $request->validate([
-            'module' => 'required'
+            'module' => 'required',
+            'types' => 'present|array',
+            'withExplication' => 'required',
+            'withNote' => 'required',
+            'onlyFalse' => 'required',
+            'notSeen' => 'required',
         ]);
+
+        $withExplication = $request->get('withExplication');
+        $withNote = $request->get('withNote');
+        $onlyFalse = $request->get('onlyFalse');
+        $notSeen = $request->get('notSeen');
         $types = $request->get('types');
         $module = null;
-        if($types){
-            $module = Module::where('id' ,$request->get('module'))
-                ->with(['quizzes' => function($q) use ($types) {
-                    $q->withCount(['tests as nbTests' => function($t) use ($types){
-                        $t->whereIn('type' , $types);
-                    }]);
-                }])->first();
-
+        $quizzes = [];
+        if ($types) {
+            $module = Module::where('id', $request->get('module'))->first();
+            if ($module) {
+                $quizzes = Quiz::select(['id' ,'label'])->where('module', $module->id)->where('isExam', false)->where('visible' ,true)
+                    ->with(['tests' => function ($t) use ($types, $withExplication, $withNote, $notSeen, $onlyFalse) {
+                        $this->filterTest($t, $types, $withExplication, $withNote, $notSeen, $onlyFalse);
+                    }])
+                    ->withCount(['tests as nbTests' => function ($t) use ($types, $withExplication, $withNote, $notSeen, $onlyFalse) {
+                        $this->filterTest($t, $types, $withExplication, $withNote, $notSeen, $onlyFalse ,false);
+                    }])->get()->filter(function ($q){
+                        return $q->nbTests > 0;
+                    });
+            }
         }
 
-        return (new ModuleResource($module))->response();
+        return (new QuizResourceCollection($quizzes))->response();
+    }
+
+    private function filterTest($t, $types, $withExplication, $withNote, $notSeen, $onlyFalse , $select = true)
+    {
+        if($select){
+            $t->select('id');
+        }
+
+        if($onlyFalse){
+            $t->whereHas('sessions' , function ($session){
+               $session->where('state' , 1);
+            });
+        }
+        $t->whereIn('type', $types)->whereHas('questions', function ($question) use ($withExplication, $withNote, $notSeen, $onlyFalse ,$select) {
+            if($select){
+                $question->select('id');
+            }
+            if ($withExplication) {
+                $question->where('explication', '!=', '');
+            }
+            if ($withNote) {
+                $question->whereHas('sessions', function ($session){
+                        $session->where('note', '!=', '');
+                });
+            }
+            if ($notSeen) {
+                $question->whereDoesntHave('sessions');
+            }
+        });
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         $request->validate([
-            'title'=>'required|unique:modules',
-            'year'=>'required|min:1',
-            'image'=>'required',
+            'title' => 'required|unique:modules',
+            'year' => 'required|min:1',
+            'image' => 'required',
             'offers' => 'required'
         ]);
 
@@ -68,9 +119,9 @@ class ModuleController extends Controller
         $image = $this->imageController->store($request);
         $module = new Module([
             'id' => Str::snake($request->get('title')),
-            'title' => $request->get('title') ,
+            'title' => $request->get('title'),
             'year' => $request->get('year'),
-            'image'=> $image->getData('data')['data']['title']
+            'image' => $image->getData('data')['data']['title']
         ]);
 
         $module->save();
@@ -78,7 +129,6 @@ class ModuleController extends Controller
         return (new ModuleResource($module->load('offers')))->response()->setStatusCode(Response::HTTP_CREATED);
 
     }
-
 
 
     /**
@@ -91,11 +141,11 @@ class ModuleController extends Controller
     public function update(Request $request, Module $module)
     {
         $validate = [
-            'year'=>'required|min:1',
-            'image'=>'required'
+            'year' => 'required|min:1',
+            'image' => 'required'
         ];
 
-        if($module->title !== $request->get('title')){
+        if ($module->title !== $request->get('title')) {
             $validate['title'] = 'required|unique:modules';
         }
 
@@ -103,7 +153,7 @@ class ModuleController extends Controller
 
 
         $image = $request->get('image')['name'];
-        if($image !== $module->image){
+        if ($image !== $module->image) {
             $image = $this->imageController->update($request, $module->image);
             $image = $image->getData('data')['data']['title'];
         }
@@ -113,7 +163,7 @@ class ModuleController extends Controller
             'id' => Str::snake($request->get('title')),
             'title' => $request->get('title'),
             'year' => $request->get('year'),
-            'image'=> $image
+            'image' => $image
         ]);
         $module->offers()->sync($this->updateOffers($request));
         return (new ModuleResource($module->load('offers')))->response();
@@ -133,11 +183,12 @@ class ModuleController extends Controller
     }
 
 
-    private function updateOffers(Request $request){
+    private function updateOffers(Request $request)
+    {
         $offers = $request->get('offers');
         $offers_ids = [];
 
-        foreach ($offers as $offer){
+        foreach ($offers as $offer) {
             $offer = Offer::updateOrCreate(['id' => $offer['id']], $offer);
             $offers_ids[] = $offer->id;
         }
