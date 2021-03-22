@@ -16,7 +16,7 @@ class QuizService
     function insertOrder($order , $isExam){
         $quizzes = Quiz::where('isExam' , $isExam)->where('order' ,'>=',$order)->get();
         foreach ($quizzes as $k => $quiz){
-            $quiz->update(['order' => $order + $k]);
+            $quiz->update(['order' => $order + $k +1]);
         }
     }
     function updateOrder(Quiz $first , Quiz $second){

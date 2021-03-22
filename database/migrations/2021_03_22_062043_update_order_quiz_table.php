@@ -17,7 +17,7 @@ class UpdateOrderQuizTable extends Migration
         $quizzes = \App\Models\Quiz::all();
 
         foreach ($quizzes as $k => $quiz){
-            $quiz->update(['order' => $k]);
+            $quiz->update(['order' => $k +1]);
             $quiz->save();
         }
     }
