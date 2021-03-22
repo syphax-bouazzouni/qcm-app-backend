@@ -13,6 +13,8 @@ use App\Models\QuestionSession;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
 
 class ModuleController extends Controller
@@ -65,10 +67,33 @@ class ModuleController extends Controller
                     }])->get()->filter(function ($q){
                         return $q->nbTests > 0;
                     });
+
             }
         }
 
-        return (new QuizResourceCollection($quizzes))->response();
+        return (new QuizResourceCollection($this->paginateCollection($quizzes)))->response();
+    }
+
+    private function paginateCollection($collection, $perPage = 15, $pageName = 'page', $fragment = null)
+    {
+        $currentPage = LengthAwarePaginator::resolveCurrentPage($pageName);
+        $currentPageItems = $collection->slice(($currentPage - 1) * $perPage, $perPage);
+        parse_str(request()->getQueryString(), $query);
+        unset($query[$pageName]);
+        $paginator = new LengthAwarePaginator(
+            $currentPageItems,
+            $collection->count(),
+            $perPage,
+            $currentPage,
+            [
+                'pageName' => $pageName,
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+                'query' => $query,
+                'fragment' => $fragment
+            ]
+        );
+
+        return $paginator;
     }
 
     private function filterTest($t, $types, $withExplication, $withNote, $notSeen, $onlyFalse , $select = true)

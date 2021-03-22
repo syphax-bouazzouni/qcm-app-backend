@@ -18,9 +18,22 @@ class QuestionController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        return (new QuestionResourceCollection(Question::withCount('tests')->with('propositions')->latest()->paginate()))->response();
+        $request->validate([
+            'types' => 'array|present' ,
+        ]);
+        $types = $request->get('types');
+        $search = $request->get('search');
+        $questions = Question::withCount('tests')->with('propositions');
+
+        if(sizeof($types) > 0){
+            $questions->whereIn('type',$types);
+        }
+        if($search){
+            $questions->where('text' ,'LIKE', '%'.$search.'%');
+        }
+        return (new QuestionResourceCollection($questions->latest()->paginate()))->response();
     }
 
     /**

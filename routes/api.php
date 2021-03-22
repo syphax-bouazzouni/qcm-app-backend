@@ -47,8 +47,10 @@ Route::middleware('api')->group(function(){
     Route::apiResource('favs' , \App\Http\Controllers\FavsController::class);
     Route::apiResource('reports' , \App\Http\Controllers\ReportsController::class);
     Route::apiResource('offers' , \App\Http\Controllers\OfferController::class);
+    Route::post('tests/filter' , [\App\Http\Controllers\TestController::class , 'index']);
     Route::apiResource('tests' , \App\Http\Controllers\TestController::class);
     Route::apiResource('questions' , \App\Http\Controllers\QuestionController::class);
+    Route::post('questions/filter' , [\App\Http\Controllers\QuestionController::class , 'index']);
 
     Route::post('images' , [ImageController::class , 'store']);
     Route::get('images/{image}' , [ImageController::class , 'show']);

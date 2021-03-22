@@ -17,9 +17,26 @@ class TestController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        return (new TestResourceCollection(Test::withCount('quizzes')->with('questions.propositions')->latest()->paginate()))->response();
+        $request->validate([
+            'sources' => 'array|present' ,
+        ]);
+        $sources = $request->get('sources');
+        $search = $request->get('search');
+        $tests = Test::withCount('quizzes')->with('questions.propositions');
+        if(sizeof($sources) > 0){
+           $tests->whereIn('source',$sources);
+        }
+        if($search){
+            $tests->where(function ($query) use ($search) {
+                $query->whereHas('questions', function ($q) use ($search){
+                    $q->where('text' ,'LIKE', '%'.$search.'%');
+                });
+                $query->OrWhere('text' ,'LIKE', '%'.$search.'%' );
+            });
+        }
+        return (new TestResourceCollection($tests->latest()->paginate()))->response();
     }
 
 
