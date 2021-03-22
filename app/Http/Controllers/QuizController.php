@@ -8,6 +8,7 @@ use App\Models\Proposition;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\Test;
+use App\Services\QuizService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -15,11 +16,13 @@ use Illuminate\Support\Str;
 class QuizController extends Controller
 {
     private TestsController $testsController;
+    private QuizService  $quizService;
 
     public function __construct()
     {
         $this->middleware('auth:api');
         $this->testsController = new TestsController();
+        $this->quizService = new QuizService();
     }
 
 
@@ -58,18 +61,23 @@ class QuizController extends Controller
             'visible' => 'required',
             'isExam' => 'required',
             'module' => 'required',
+            'order' => 'required',
         ]);
+        $order = $request->get('order');
+        $isExam = $request->get('isExam');
+        $this->quizService->insertOrder($order , $isExam);
 
         $quiz = new Quiz([
             'id' => Str::snake($request->get('label')),
             'label' => $request->get('label'),
             'visible' => $request->get('visible'),
-            'isExam' => $request->get('isExam'),
+            'isExam' => $isExam,
+            'order' => $order,
             'module' => $request->get('module'),
         ]);
 
         $quiz->save();
-        $this->updateTests($request, $quiz);
+        $this->quizService->updateTests($request, $quiz);
         return (new QuizResource($quiz->load('tests.questions.propositions')))->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
@@ -90,6 +98,11 @@ class QuizController extends Controller
             'module' => 'required'
         ];
 
+        $order = $request->get('order');
+        $isExam = $request->get('isExam');
+        if($quiz->order != $order){
+            $this->quizService->insertOrder($order , $isExam);
+        }
         if ($quiz->label !== $request->get('label')) {
             $validate['label'] = 'required|unique:quizzes';
         }
@@ -100,10 +113,11 @@ class QuizController extends Controller
             'id' => Str::snake($request->get('label')),
             'label' => $request->get('label'),
             'visible' => $request->get('visible'),
-            'isExam' => $request->get('isExam'),
+            'isExam' => $isExam,
             'module' => $request->get('module'),
+            'order' => $order,
         ]);
-        $this->updateTests($request, $quiz);
+        $this->quizService->updateTests($request, $quiz);
 
         return (new QuizResource($quiz->load('tests.questions.propositions')))->response();
     }
@@ -111,8 +125,9 @@ class QuizController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param Quiz $quiz
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Quiz $quiz)
     {
@@ -120,56 +135,17 @@ class QuizController extends Controller
         return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    private function updateTests(Request $request, Quiz $quiz)
-    {
-        $tests_ids = [];
-        foreach ($request->get('tests') as $test) {
-            $test_id = $test['id'];
-            $questions = $test['questions'];
-            unset($test['questions']);
-            unset($test['id']);
+   public function updateOrder(Request $request){
+        $request->validate([
+            'first' => 'required',
+            'second' => 'required'
+        ]);
+        $first = Quiz::findOrFail($request->get('first'));
+        $second = Quiz::findOrFail($request->get('second'));
 
-            if ($test_id){
-                $test = Test::updateOrCreate(['id' => $test_id],$test);
-            }else{
-                $test = Test::create($test);
-            }
+        $this->quizService->updateOrder($first , $second);
 
-            $tests_ids[] = $test->id;
-            $this->updateQuestions($questions, $test);
-        }
+        return response()->json(['message' => 'orders updated'])->setStatusCode(Response::HTTP_ACCEPTED);
+   }
 
-        $quiz->tests()->sync($tests_ids);
-    }
-
-    private function updateQuestions($questions, Test $test)
-    {
-        $questions_ids = [];
-        foreach ($questions as $question) {
-            $propositions = $question['propositions'];
-            $question_id = $question['id'];
-            unset($question['propositions']);
-            unset($question['isQROC']);
-            unset($question['id']);
-            if ($question_id){
-                $question = Question::updateOrCreate(['id' => $question_id], $question);
-            }else{
-                $question = Question::create($question);
-            }
-            $questions_ids[] = $question->id;
-            $this->updatePropositions($propositions, $question->id);
-        }
-        $test->questions()->sync($questions_ids);
-    }
-
-    private function updatePropositions($propositions, $question_id)
-    {
-        if ($question_id){
-            Proposition::where('question', $question_id)->delete();
-        }
-        foreach ($propositions as $proposition) {
-            $proposition['question'] = $question_id;
-            $proposition = Proposition::updateOrCreate($proposition);
-        }
-    }
 }

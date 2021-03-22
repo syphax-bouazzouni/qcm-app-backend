@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -16,8 +17,15 @@ class Quiz extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id','label', 'visible','isExam','module'
+        'id','label', 'visible','isExam','module' , 'order'
     ];
+
+    protected static function boot() {
+        parent::boot();
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderBy('order');
+        });
+    }
 
     public function tests()
     {

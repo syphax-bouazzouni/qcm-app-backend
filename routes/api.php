@@ -44,6 +44,7 @@ Route::middleware('api')->group(function(){
 
     Route::apiResource('modules' , \App\Http\Controllers\ModuleController::class);
     Route::apiResource('quizzes' , \App\Http\Controllers\QuizController::class);
+    Route::post('quizzes/orders' , [\App\Http\Controllers\QuizController::class , 'updateOrder']);
     Route::apiResource('favs' , \App\Http\Controllers\FavsController::class);
     Route::apiResource('reports' , \App\Http\Controllers\ReportsController::class);
     Route::apiResource('offers' , \App\Http\Controllers\OfferController::class);
