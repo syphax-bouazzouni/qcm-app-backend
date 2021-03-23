@@ -29,7 +29,7 @@ class Quiz extends Model
 
     public function tests()
     {
-        return $this->belongsToMany(Test::class);
+        return $this->belongsToMany(Test::class)->withPivot('order')->orderByPivot('order');
     }
 
     public static function makeId(string $tile){

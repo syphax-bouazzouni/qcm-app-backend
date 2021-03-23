@@ -28,7 +28,7 @@ class QuizService
     function updateTests(Request $request, Quiz $quiz)
     {
         $tests_ids = [];
-        foreach ($request->get('tests') as $test) {
+        foreach ($request->get('tests') as $k=>$test) {
             $test_id = $test['id'];
             $questions = $test['questions'];
             unset($test['questions']);
@@ -39,8 +39,8 @@ class QuizService
             }else{
                 $test = Test::create($test);
             }
-
-            $tests_ids[] = $test->id;
+        
+            $tests_ids[$test->id] = ['order' => $k+1];
             $this->updateQuestions($questions, $test);
         }
 

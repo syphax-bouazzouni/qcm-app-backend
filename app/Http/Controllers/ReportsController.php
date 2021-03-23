@@ -25,7 +25,7 @@ class ReportsController extends Controller
      */
     public function index(){
         if (auth()->user()->is_admin){
-            return (new ReportResourceCollection(Report::with('test.questions')->paginate()))->response();
+            return (new ReportResourceCollection(Report::with(['test.questions' ,'user'])->paginate()))->response();
         }else{
             return response()->json()->setStatusCode(Response::HTTP_UNAUTHORIZED);
         }
