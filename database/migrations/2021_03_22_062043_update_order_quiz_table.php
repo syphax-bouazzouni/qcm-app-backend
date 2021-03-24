@@ -14,7 +14,14 @@ class UpdateOrderQuizTable extends Migration
      */
     public function up()
     {
-        $quizzes = \App\Models\Quiz::all();
+        $quizzes = \App\Models\Quiz::where('isExam' , true)->get();
+
+        foreach ($quizzes as $k => $quiz){
+            $quiz->update(['order' => $k +1]);
+            $quiz->save();
+        }
+
+        $quizzes = \App\Models\Quiz::where('isExam' , false)->get();
 
         foreach ($quizzes as $k => $quiz){
             $quiz->update(['order' => $k +1]);

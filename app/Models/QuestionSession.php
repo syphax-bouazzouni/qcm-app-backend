@@ -9,7 +9,7 @@ class QuestionSession extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'test' , 'state' , 'type' , 'text' , 'explication' , 'note' , 'isQrocResponded' ,'question'
+        'test' , 'state' , 'type' , 'text' , 'explication'  , 'isQrocResponded' ,'question'
     ];
 
     public function test()

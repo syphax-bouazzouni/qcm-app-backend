@@ -40,7 +40,6 @@ class QuestionSessionResource extends JsonResource
                 "explication" => $this->explication
             ],
             "state" => $this->state,
-            "note" => $this->note,
             "isQrocResponded" => $this->isQrocResponded,
             "propositionsState" => $propositionsState
         ];

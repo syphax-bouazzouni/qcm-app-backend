@@ -185,7 +185,7 @@ class QuizSessionService
      */
     public function isBasicSession($quizzes)
     {
-        return sizeof($quizzes) == 1 && !array_key_exists('test',$quizzes[0]);
+        return sizeof($quizzes) == 1 && !array_key_exists('tests',$quizzes[0]);
     }
 
     public function findBasicSessionTests($quizzes, $isQuiz , $isContinue): array

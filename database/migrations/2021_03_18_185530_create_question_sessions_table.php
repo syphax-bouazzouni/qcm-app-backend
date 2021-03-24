@@ -19,7 +19,6 @@ class CreateQuestionSessionsTable extends Migration
             $table->bigInteger('question')->nullable();
             $table->text('text');
             $table->text('explication')->nullable()->default('');
-            $table->text('note')->nullable()->default('');
             $table->integer('type');
             $table->integer('state')->default(4);
             $table->boolean('isQrocResponded')->default(false);

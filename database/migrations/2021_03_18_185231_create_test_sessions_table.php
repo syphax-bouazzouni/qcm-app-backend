@@ -20,6 +20,7 @@ class CreateTestSessionsTable extends Migration
             $table->bigInteger('test')->nullable();
             $table->string('quizLabel');
             $table->integer('timer')->default(0);
+            $table->text('note')->nullable()->default('');
             $table->text('text');
             $table->integer('type');
             $table->string('source');

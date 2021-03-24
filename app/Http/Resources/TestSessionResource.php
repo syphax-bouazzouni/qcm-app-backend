@@ -27,6 +27,7 @@ class TestSessionResource extends JsonResource
             "text" => $this->text,
             "timer" => $this->timer,
             "state" => $this->state,
+            "note" => $this->note,
             "quizLabel" => $this->quizLabel,
             "questions" => QuestionSessionResource::collection($this->questions)
         ];

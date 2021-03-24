@@ -92,13 +92,13 @@ class QuizSessionController extends Controller
             TestSession::findOrFail($newTest['id'])->update([
                 "text" =>  $newTest['text'],
                 "timer" => $newTest['timer'],
-                 "state" => $newTest['state'],
+                "state" => $newTest['state'],
+                "note" => $newTest['note']
             ]);
             foreach ($newTest['questions'] as $newQuestion){
                 $question = QuestionSession::findOrFail($newQuestion['id']);
                 $question->update([
                     "state" => $newQuestion["state"] ,
-                    "note" => $newQuestion["note"],
                     "isQrocResponded" => $newQuestion["isQrocResponded"]]);
                 $propositions = $question->propositionsState()->get();
 

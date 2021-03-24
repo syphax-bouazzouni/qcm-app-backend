@@ -102,22 +102,23 @@ class ModuleController extends Controller
             $t->select('id');
         }
 
-        if($onlyFalse){
-            $t->whereHas('sessions' , function ($session){
-               $session->where('state' , 1);
+        if($onlyFalse || $withNote){
+            $t->whereHas('sessions' , function ($session) use ($withNote ,$onlyFalse){
+               if ($onlyFalse) {
+                   $session->where('state' , 1);
+               }
+               if ($withNote) {
+                   $session->where('note', '!=', '');
+                }
             });
         }
-        $t->whereIn('type', $types)->whereHas('questions', function ($question) use ($withExplication, $withNote, $notSeen, $onlyFalse ,$select) {
+
+        $t->whereIn('type', $types)->whereHas('questions', function ($question) use ($withExplication, $notSeen, $onlyFalse ,$select) {
             if($select){
                 $question->select('id');
             }
             if ($withExplication) {
                 $question->where('explication', '!=', '');
-            }
-            if ($withNote) {
-                $question->whereHas('sessions', function ($session){
-                        $session->where('note', '!=', '');
-                });
             }
             if ($notSeen) {
                 $question->whereDoesntHave('sessions');
