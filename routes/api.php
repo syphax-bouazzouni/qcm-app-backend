@@ -34,6 +34,8 @@ Route::middleware('api')->group(function(){
         Route::post('email/resendmail', [VerificationApiController::class,'resend'])->name('verification.resend');
         Route::get('social/{provider}', [AuthController::class,'validateSocialToken']);
     });
+    Route::get('/users', [\App\Http\Controllers\UsersController::class, 'index']);
+    Route::post('/users/{id}', [\App\Http\Controllers\UsersController::class, 'update']);
     Route::post('modules/quizzes' ,[\App\Http\Controllers\QuizController::class , 'index']);
     Route::post('module/quizzes/filter' ,[\App\Http\Controllers\ModuleController::class , 'moduleWithQuizzes']);
     Route::post('user/favs' ,[\App\Http\Controllers\FavsController::class , 'index']);
