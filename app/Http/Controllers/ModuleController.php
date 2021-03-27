@@ -157,7 +157,7 @@ class ModuleController extends Controller
         ]);
 
         $module->save();
-        $module->offers()->sync($this->updateOffers($request));
+        //$module->offers()->sync($this->updateOffers($request));
         return (new ModuleResource($module->load('offers')))->response()->setStatusCode(Response::HTTP_CREATED);
 
     }
@@ -197,7 +197,7 @@ class ModuleController extends Controller
             'year' => $request->get('year'),
             'image' => $image
         ]);
-        $module->offers()->sync($this->updateOffers($request));
+        //$module->offers()->sync($this->updateOffers($request));
         return (new ModuleResource($module->load('offers')))->response();
     }
 
