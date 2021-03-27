@@ -77,12 +77,18 @@ class ModuleController extends Controller
     private function paginateCollection($collection, $perPage = 15, $pageName = 'page', $fragment = null)
     {
         $currentPage = LengthAwarePaginator::resolveCurrentPage($pageName);
-        $currentPageItems = $collection->slice(($currentPage - 1) * $perPage, $perPage);
+        if(sizeof($collection) > 0 ){
+            $currentPageItems = $collection->slice(($currentPage - 1) * $perPage, $perPage);
+            $count = $collection->count();
+        }else{
+            $currentPageItems = [];
+            $count = 0;
+        }
         parse_str(request()->getQueryString(), $query);
         unset($query[$pageName]);
         $paginator = new LengthAwarePaginator(
             $currentPageItems,
-            $collection->count(),
+            $count,
             $perPage,
             $currentPage,
             [

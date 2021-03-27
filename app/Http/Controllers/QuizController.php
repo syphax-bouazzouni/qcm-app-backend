@@ -39,7 +39,7 @@ class QuizController extends Controller
         return (new QuizResourceCollection(Quiz::where([
             ['module', '=', $module],
             ['isExam', '=', $isExam],
-        ])->paginate()))->response();
+        ])->withCount('tests as nbTests')->paginate()))->response();
     }
 
 
