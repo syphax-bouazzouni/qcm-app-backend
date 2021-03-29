@@ -34,7 +34,13 @@ class ModuleController extends Controller
      */
     public function index()
     {
-        return (new ModuleResourceCollection(Module::paginate()->load('offers')))->response();
+        $year = auth()->user()->year;
+        if($year){
+            $modules = Module::where('year' ,$year)->paginate()->load('offers');
+        }else{
+            $modules = Module::paginate()->load('offers');
+        }
+        return (new ModuleResourceCollection($modules))->response();
     }
 
     public function moduleWithQuizzes(Request $request)

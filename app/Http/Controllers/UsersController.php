@@ -48,10 +48,23 @@ class UsersController extends Controller
      */
     public function update(Request $request, int $id)
     {
-
-        if(auth()->user()->is_admin){
+        $auth = auth()->user();
+        if($auth->is_admin || $auth->id = $id){
             $user = User::findOrFail($id);
-            $user->is_admin = $request->get('user')['is_admin'];
+
+            if(isset($request->get('user')['is_admin'])){
+                $user->is_admin = $request->get('user')['is_admin'];
+            }
+            if(key_exists('year',$request->get('user'))){
+                $user->year = $request->get('user')['year'];
+            }
+            if(isset($request->get('user')['university'])){
+                $user->university = $request->get('user')['university'];
+            }
+            if(isset($request->get('user')['name'])){
+                $user->name = $request->get('user')['name'];
+            }
+
             $user->save();
             return \response()->json($user)->setStatusCode(Response::HTTP_ACCEPTED);
         }else{

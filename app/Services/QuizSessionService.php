@@ -112,7 +112,7 @@ class QuizSessionService
 
         $quizSession = $query->get()->filter(function ($q) use($quizzes_ids , $tests_ids){
             return $q->nbQuiz == sizeof($quizzes_ids) && $q->nbTest == sizeof($tests_ids);
-        })->first;
+        })->first();
 
         return ($quizSession ? $quizSession : null);
     }
