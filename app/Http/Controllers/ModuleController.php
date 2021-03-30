@@ -36,9 +36,9 @@ class ModuleController extends Controller
     {
         $year = auth()->user()->year;
         if($year){
-            $modules = Module::where('year' ,$year)->paginate()->load('offers');
+            $modules = Module::where('year' ,$year)->withCount('quizzes as nbQuiz')->paginate()->load('offers');
         }else{
-            $modules = Module::paginate()->load('offers');
+            $modules = Module::withCount('quizzes as nbQuiz')->paginate()->load('offers');
         }
         return (new ModuleResourceCollection($modules))->response();
     }

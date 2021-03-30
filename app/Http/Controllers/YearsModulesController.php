@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\YearModulesCollection;
 use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class YearsModulesController extends Controller
 {
@@ -15,61 +16,56 @@ class YearsModulesController extends Controller
      */
     public function index()
     {
-        $modules = Module::all();
-        $years = [];
+        $year = auth()->user()->year;
+        $years = $this->getByYears($this->getModules($year));
+        return (new YearModulesCollection($years))->response();
+    }
 
+
+    public function show()
+    {
+        $year = auth()->user()->year;
+        $modules = $this->getModules($year);
+
+        $nbQuiz = 0;
+        $nbExam = 0;
+
+        foreach ($modules as $module){
+            $nbExam+= $module->nbExam;
+            $nbQuiz+= $module->nbQuiz;
+        }
+
+        return response()->json(['year' => $year , 'nbQuiz' => $nbQuiz , 'nbExam' => $nbExam])->setStatusCode(Response::HTTP_ACCEPTED);
+    }
+    private function getModules($year){
+
+        if ($year) {
+            $modules = Module::where('year', $year)->withCount(['quizzes as nbQuiz' => function ($query) {
+                $query->where('isExam', false);
+            },
+                'quizzes as nbExam' => function ($query) {
+                    $query->where('isExam', true);
+                }])->get()->load('offers');
+        } else {
+            $modules = Module::withCount(['quizzes as nbQuiz' => function ($query) {
+                $query->where('isExam', false);
+            },
+                'quizzes as nbExam' => function ($query) {
+                    $query->where('isExam', true);
+                }])->get()->load('offers');
+        }
+        return $modules;
+    }
+    private function getByYears($modules)
+    {
+        $years = [];
         foreach ($modules as $module) {
             if (isset($years[$module->year])) {
                 $years[$module->year][] = $module;
             } else {
-                $years[$module->year] =  [$module];
+                $years[$module->year] = [$module];
             }
         }
-        return (new YearModulesCollection($years))->response();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return $years;
     }
 }

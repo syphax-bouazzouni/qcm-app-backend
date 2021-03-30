@@ -59,6 +59,7 @@ Route::middleware('api')->group(function(){
     Route::get('images/{image}' , [ImageController::class , 'show']);
 
     Route::get('years/modules' ,[\App\Http\Controllers\YearsModulesController::class , 'index']);
+    Route::get('years/module' ,[\App\Http\Controllers\YearsModulesController::class , 'show']);
 
     Route::post('quiz/session/start' ,[\App\Http\Controllers\QuizSessionController::class , 'startSession']);
     Route::post('quiz/session/new' ,[\App\Http\Controllers\QuizSessionController::class , 'startNewSession']);
