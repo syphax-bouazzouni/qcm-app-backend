@@ -150,7 +150,7 @@ class ModuleController extends Controller
             'title' => 'required|unique:modules',
             'year' => 'required|min:1',
             'image' => 'required',
-            'offers' => 'required'
+            /*'offers' => 'required'*/
         ]);
 
 
