@@ -95,7 +95,8 @@ class QuizController extends Controller
         $validate = [
             'visible' => 'required',
             'isExam' => 'required',
-            'module' => 'required'
+            'module' => 'required',
+            'order' => 'required'
         ];
 
         $order = $request->get('order');

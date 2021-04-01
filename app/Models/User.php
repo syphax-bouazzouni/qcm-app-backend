@@ -55,4 +55,7 @@ class User extends Authenticatable implements JWTSubject,MustVerifyEmail
     {
         return [];
     }
+    public function year(){
+        return$this->belongsTo( Year::class, 'year');
+    }
 }

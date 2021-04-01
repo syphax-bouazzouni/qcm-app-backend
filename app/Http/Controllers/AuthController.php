@@ -49,7 +49,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'Email not verified', 'unverified'=> true , 'email' => $request->get('email')], 401);
         }
         return response()->json($this->authService->
-            createNewToken($token,auth()->factory()->getTTL(),auth()->user()));
+            createNewToken($token,auth()->factory()->getTTL(),User::with('year')->find(auth()->id())));
     }
 
 
@@ -105,7 +105,7 @@ class AuthController extends Controller
      * @return JsonResponse
      */
     public function userProfile() {
-        return response()->json(auth()->user());
+        return response()->json(User::with('year')->find(auth()->id()));
     }
 
     // Callback du provider
@@ -134,7 +134,7 @@ class AuthController extends Controller
             $token= auth()->login($user);
             $user = auth()->user();
             $user->markEmailAsVerified();
-
+            $user = User::with('year')->find(auth()->id());
             return response()->json($this->authService->
             createNewToken($token,auth()->factory()->getTTL() ,$user));
         }else{

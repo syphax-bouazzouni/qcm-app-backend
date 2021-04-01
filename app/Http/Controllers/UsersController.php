@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserCollection;
 use App\Models\User;
+use App\Models\Year;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -55,7 +56,7 @@ class UsersController extends Controller
             if(isset($request->get('user')['is_admin'])){
                 $user->is_admin = $request->get('user')['is_admin'];
             }
-            if(key_exists('year',$request->get('user'))){
+            if(isset($request->get('user')['year'])){
                 $user->year = $request->get('user')['year'];
             }
             if(isset($request->get('user')['university'])){
@@ -65,7 +66,9 @@ class UsersController extends Controller
                 $user->name = $request->get('user')['name'];
             }
 
+
             $user->save();
+            $user->load('year');
             return \response()->json($user)->setStatusCode(Response::HTTP_ACCEPTED);
         }else{
             return \response(null , Response::HTTP_UNAUTHORIZED);

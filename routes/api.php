@@ -43,7 +43,8 @@ Route::middleware('api')->group(function(){
     Route::post('user/favs/removetest' ,[\App\Http\Controllers\FavsController::class , 'removeTest']);
     Route::get('user/favs/tests/{fav}' ,[\App\Http\Controllers\FavsController::class , 'indexOfFav']);
     Route::get('reports/count2' , [\App\Http\Controllers\ReportsController::class, 'count']);
-
+    Route::apiResource('years' , \App\Http\Controllers\YearsController::class);
+    Route::get('year/infos' , [\App\Http\Controllers\YearsController::class , 'infos']);
     Route::apiResource('modules' , \App\Http\Controllers\ModuleController::class);
     Route::apiResource('quizzes' , \App\Http\Controllers\QuizController::class);
     Route::post('quizzes/orders' , [\App\Http\Controllers\QuizController::class , 'updateOrder']);
@@ -58,8 +59,6 @@ Route::middleware('api')->group(function(){
     Route::post('images' , [ImageController::class , 'store']);
     Route::get('images/{image}' , [ImageController::class , 'show']);
 
-    Route::get('years/modules' ,[\App\Http\Controllers\YearsModulesController::class , 'index']);
-    Route::get('years/module' ,[\App\Http\Controllers\YearsModulesController::class , 'show']);
 
     Route::post('quiz/session/start' ,[\App\Http\Controllers\QuizSessionController::class , 'startSession']);
     Route::post('quiz/session/new' ,[\App\Http\Controllers\QuizSessionController::class , 'startNewSession']);

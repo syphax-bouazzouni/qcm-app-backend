@@ -34,18 +34,22 @@ class ImageController extends Controller
 
         //store file into document folder
         $base64image = $request->get('image')['source'];
-        @list($type, $file_data) = explode(';', $base64image);
-        @list(, $file_data) = explode(',', $file_data);
-        $type = explode(";", explode("/", $base64image)[1])[0];
-        $file_name = Str::random(15) . '.' . $type;
-        $path = 'images/' .  $file_name;
-        Storage::disk('private')->put($path, base64_decode($file_data));
+        if(strlen($base64image)>0){
+            @list($type, $file_data) = explode(';', $base64image);
+            @list(, $file_data) = explode(',', $file_data);
+            $type = explode(";", explode("/", $base64image)[1])[0];
+            $file_name = Str::random(15) . '.' . $type;
+            $path = 'images/' .  $file_name;
+            Storage::disk('private')->put($path, base64_decode($file_data));
 
-        //store your file into database
-        $document = new Image(['title' => basename($file_name)]);
-        $document->save();
+            //store your file into database
+            $document = new Image(['title' => basename($file_name)]);
+            $document->save();
+             return (new ImageResource($document))->response(Response::HTTP_CREATED);
+        }else{
+            return null;
+        }
 
-        return (new ImageResource($document))->response(Response::HTTP_CREATED);
     }
 
     /**
