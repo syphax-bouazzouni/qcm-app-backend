@@ -42,7 +42,8 @@ Route::middleware('api')->group(function(){
     Route::post('user/favs/addtests' ,[\App\Http\Controllers\FavsController::class , 'addTests']);
     Route::post('user/favs/removetest' ,[\App\Http\Controllers\FavsController::class , 'removeTest']);
     Route::get('user/favs/tests/{fav}' ,[\App\Http\Controllers\FavsController::class , 'indexOfFav']);
-    Route::get('reports/count2' , [\App\Http\Controllers\ReportsController::class, 'count']);
+    Route::get('reports/count' , [\App\Http\Controllers\ReportsController::class, 'count']);
+    Route::get('notifications/count' , [\App\Http\Controllers\NotificationController::class, 'count']);
     Route::apiResource('years' , \App\Http\Controllers\YearsController::class);
     Route::get('year/infos' , [\App\Http\Controllers\YearsController::class , 'infos']);
     Route::apiResource('modules' , \App\Http\Controllers\ModuleController::class);
@@ -50,6 +51,7 @@ Route::middleware('api')->group(function(){
     Route::post('quizzes/orders' , [\App\Http\Controllers\QuizController::class , 'updateOrder']);
     Route::apiResource('favs' , \App\Http\Controllers\FavsController::class);
     Route::apiResource('reports' , \App\Http\Controllers\ReportsController::class);
+    Route::apiResource('notifications' , \App\Http\Controllers\NotificationController::class);
     Route::apiResource('offers' , \App\Http\Controllers\OfferController::class);
     Route::post('tests/filter' , [\App\Http\Controllers\TestController::class , 'index']);
     Route::apiResource('tests' , \App\Http\Controllers\TestController::class);
