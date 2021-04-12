@@ -14,9 +14,9 @@ class AddImagesToModule extends Migration
     public function up()
     {
         Schema::table('modules', function (Blueprint $table) {
-            $table->string('image')->nullable();
+            $table->string('image')->nullable()->nullOnDelete();
             $table->foreign('image')->references('title')->on('images')
-                ->onUpdate('cascade')->nullOnDelete();
+                ->onUpdate('cascade');
         });
     }
 

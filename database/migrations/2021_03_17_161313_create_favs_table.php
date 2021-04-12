@@ -16,11 +16,11 @@ class CreateFavsTable extends Migration
         Schema::create('favs', function (Blueprint $table) {
             $table->id();
             $table->string('label');
-            $table->bigInteger('user');
+            $table->unsignedBigInteger('user')->nullOnDelete();
             $table->timestamps();
 
             $table->foreign('user')->references('id')->on('users')
-                ->onUpdate('cascade')->nullOnDelete();
+                ->onUpdate('cascade');
         });
     }
 

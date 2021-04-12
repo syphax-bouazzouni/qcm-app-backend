@@ -15,7 +15,7 @@ class CreateQuizzesTestTable extends Migration
     {
         Schema::create('quiz_test', function (Blueprint $table) {
             $table->string('quiz_id');
-            $table->bigInteger('test_id');
+            $table->unsignedBigInteger('test_id');
 
             $table->foreign('quiz_id')->references('id')->on('quizzes')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('test_id')->references('id')->on('tests')->onDelete('cascade')->onUpdate('cascade');

@@ -15,7 +15,7 @@ class AddYearForiegnUserTable extends Migration
     {
         schema::table('users', function (blueprint $table) {
             $table->foreign('year')->references('id')->on('years')
-                ->cascadeOnUpdate()->nullOnDelete();
+                ->onUpdate('cascade')->onDelete('set null');
         });
     }
 

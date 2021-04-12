@@ -14,8 +14,8 @@ class CreateTestQuestionTable extends Migration
     public function up()
     {
         Schema::create('question_test', function (Blueprint $table) {
-            $table->bigInteger('test_id');
-            $table->bigInteger('question_id');
+            $table->unsignedBigInteger('test_id');
+            $table->unsignedBigInteger('question_id');
 
             $table->foreign('test_id')->references('id')->on('tests');
             $table->foreign('question_id')->references('id')->on('questions');

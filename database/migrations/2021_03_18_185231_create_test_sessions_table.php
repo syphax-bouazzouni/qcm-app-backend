@@ -16,8 +16,8 @@ class CreateTestSessionsTable extends Migration
         Schema::create('test_sessions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->bigInteger('quiz');
-            $table->bigInteger('test')->nullable();
+            $table->unsignedBigInteger('quiz');
+            $table->unsignedBigInteger('test')->nullable()->nullOnDelete();
             $table->string('quizLabel');
             $table->integer('timer')->default(0);
             $table->text('note')->nullable()->default('');
@@ -29,7 +29,7 @@ class CreateTestSessionsTable extends Migration
             $table->foreign('quiz')->references('id')->on('quiz_sessions')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('test')->references('id')->on('tests')
-                ->onUpdate('cascade')->nullOnDelete();
+                ->onUpdate('cascade');
         });
     }
 

@@ -17,7 +17,7 @@ class CreateQuizCopiesTable extends Migration
             $table->id();
             $table->string('quiz_id');
             $table->string('label');
-            $table->bigInteger('quiz');
+            $table->unsignedBigInteger('quiz');
             $table->timestamps();
 
             $table->foreign('quiz')->references('id')->on('quiz_sessions')

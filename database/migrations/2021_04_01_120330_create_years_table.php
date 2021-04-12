@@ -18,9 +18,9 @@ class CreateYearsTable extends Migration
             $table->string('title');
             $table->integer('order');
             $table->timestamps();
-            $table->string('image')->nullable();
+            $table->string('image')->nullable()->nullOnDelete();
             $table->foreign('image')->references('title')->on('images')
-                ->onUpdate('cascade')->nullOnDelete();
+                ->onUpdate('cascade');
         });
     }
 

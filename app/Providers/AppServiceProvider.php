@@ -29,6 +29,6 @@ class AppServiceProvider extends ServiceProvider
             // The environment is local
             $this->app['request']->server->set('HTTPS','on');
         }
-        Schema::defaultstringLength(60000);
+        Schema::defaultstringLength(16383);
     }
 }

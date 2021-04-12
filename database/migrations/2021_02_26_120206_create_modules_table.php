@@ -17,7 +17,7 @@ class CreateModulesTable extends Migration
             $table->timestamps();
             $table->string('id')->primary();
             $table->string('title');
-            $table->integer('year');
+            $table->unsignedBigInteger('year');
         });
     }
 

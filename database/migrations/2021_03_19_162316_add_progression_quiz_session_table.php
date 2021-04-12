@@ -13,13 +13,13 @@ class AddProgressionQuizSessionTable extends Migration
      */
     public function up()
     {
-        /*
-         * Schema::table('quiz_sessions', function (Blueprint $table) {
-            $table->bigInteger('progression');
+
+        Schema::table('quiz_sessions', function (Blueprint $table) {
+            $table->unsignedBigInteger('progression');
             $table->foreign('progression')->references('id')->on('quiz_session_progressions')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
-        */
+
     }
 
     /**
@@ -29,12 +29,12 @@ class AddProgressionQuizSessionTable extends Migration
      */
     public function down()
     {
-        /*
+
 
          Schema::table('quiz_sessions', function (Blueprint $table) {
             $table->dropForeign('quiz_sessions_progression_foreign');
             $table->removeColumn('progression');
         });
-        */
+
     }
 }

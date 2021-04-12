@@ -19,7 +19,7 @@ class CreateQuizSessionProgressionsTable extends Migration
             $table->float('error');
             $table->float('notRespond');
             $table->float('rest');
-            $table->bigInteger('quiz');
+            $table->unsignedBigInteger('quiz');
             $table->timestamps();
 
             $table->foreign('quiz')->references('id')->on('quiz_sessions')

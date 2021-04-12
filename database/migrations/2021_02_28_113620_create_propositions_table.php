@@ -18,7 +18,7 @@ class CreatePropositionsTable extends Migration
             $table->timestamps();
             $table->string('proposition');
             $table->boolean('isResponse')->default(false);
-            $table->bigInteger('question')->nullable();
+            $table->unsignedBigInteger('question')->nullable();
 
             $table->foreign('question')->references('id')->on('questions');
 

@@ -15,7 +15,7 @@ class AddYearForiegnModulesTable extends Migration
     {
         schema::table('modules', function (blueprint $table) {
             $table->foreign('year')->references('id')->on('years')
-                ->cascadeOnUpdate()->cascadeOnDelete();
+                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

@@ -14,7 +14,7 @@ class AddYearAndUniversityUserTable extends Migration
     public function up()
     {
         schema::table('users', function (blueprint $table) {
-            $table->integer('year')->nullable()->default(1);
+            $table->unsignedBigInteger('year')->nullable()->default(1);
             $table->string('university')->nullable()->default(null);
         });
     }

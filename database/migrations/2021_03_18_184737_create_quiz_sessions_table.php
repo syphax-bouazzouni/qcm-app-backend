@@ -15,14 +15,14 @@ class CreateQuizSessionsTable extends Migration
     {
         Schema::create('quiz_sessions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user');
+            $table->unsignedBigInteger('user')->nullOnDelete();
             $table->integer('state')->default(0);
             $table->integer('currentTest')->default(0);
             $table->boolean('isQuiz');
             $table->timestamps();
 
             $table->foreign('user')->references('id')->on('users')
-                ->onUpdate('cascade')->nullOnDelete();
+                ->onUpdate('cascade');
 
         });
     }

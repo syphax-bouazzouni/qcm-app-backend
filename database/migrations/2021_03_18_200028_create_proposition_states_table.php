@@ -15,7 +15,7 @@ class CreatePropositionStatesTable extends Migration
     {
         Schema::create('proposition_states', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('question');
+            $table->unsignedBigInteger('question');
             $table->string('proposition');
             $table->boolean('isResponse')->default(false);
             $table->boolean('propositionsState')->default(false);
